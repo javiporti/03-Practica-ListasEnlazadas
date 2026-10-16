@@ -79,7 +79,10 @@ class ListaDoble:
     def __reversed__(self):                      # reversed(l)
         # Coste de cada paso: O(?)   Recorrido completo: O(?)
         # TODO: igual que __iter__ pero empezando por la cola y yendo hacia atras.
-        raise NotImplementedError
+        actual = self.cola
+        while actual is not None:
+            yield actual.dato       #yield sigue entregando el dato del nodo actual y se queda parado hasta que el for pide el siguiente -> guarda la dirección
+            actual = actual.anterior
 
     def buscar(self, dato):
         # O(n). Devuelve el PRIMER nodo cuyo dato es 'dato', o None si no esta.
@@ -117,13 +120,32 @@ class ListaDoble:
     def insert_last(self, dato):
         # Coste: O(?)
         # TODO: simetrico a insert_first, trabajando sobre la cola.
-        raise NotImplementedError
+        nuevo = NodoDoble(dato)
+        if self.cola is None:
+            nuevo.anterior = self.cola
+            self.cola.siguiente = nuevo
+            self.cola = nuevo
+        self.tamano += 1
+        #podríamos poner "return", estas funciones suelen devolver algo, pero no es necesario
+
 
     def insert_before(self, nodo, dato):
+        #nodo = posicion
         # Coste: O(?)
         # pre: nodo es un nodo de ESTA lista.
         # TODO: caso especial -> nodo es la cabeza (usa insert_first).
-        raise NotImplementedError
+        if nodo is self.cabeza:
+            return self.insert_first(dato)
+
+        nuevo = NodoDoble(dato)
+        previo = nodo.anterior       # existe, porque nodo no es la cabeza
+        nuevo.anterior = previo
+        nuevo.siguiente = nodo
+        previo.siguiente = nuevo
+        nodo.anterior = nuevo
+        self.tamano += 1
+        return nuevo
+ 
 
     def insert_after(self, nodo, dato):
         # Coste: O(?)
@@ -140,13 +162,33 @@ class ListaDoble:
         # TODO: reconectar el enlace izquierdo (o mover cabeza si nodo era la cabeza)
         # TODO: reconectar el enlace derecho (o mover cola si nodo era la cola)
         # TODO: actualizar tamano
-        raise NotImplementedError
+        if nodo.anterior is not None:
+            nodo.anterior.siguiente = nodo.siguiente
+
+
+        else:   #el nodo es la cabeza!
+            self.cabeza = nodo.siguiente
+
+        if nodo.siguiente is not None:  #el nodo es la cola!
+            nodo.siguiente.anterior = nodo.anterior
+
+        else:
+            self.cola = nodo.anterior
+
+        nodo.anterior = nodo.siguiente = None   #no hace falta ponerlo en verdad
+        self.tamano -= 1
+        #opcional : return nodo.dato
+
+            
 
     def delete_first(self):
         # Coste: O(?)
         # Si la lista esta vacia: raise IndexError("..."), como list.pop().
         # Devuelve el dato borrado. Pista: es un caso particular de delete_node.
-        raise NotImplementedError
+        if self.tamano == 0:
+            raise IndexError("La lista está vacía!!!")
+        else: #la lista no esta vacía
+            return self.delete_node(self.cabeza)
 
     def delete_last(self):
         # Coste: O(?)
@@ -156,10 +198,28 @@ class ListaDoble:
     # --- Palindromo ---------------------------------------------------------
 
     def es_palindromo(self):
-        # Coste: O(?) en tiempo y O(?) en memoria auxiliar.
+        # Coste: O(1) en tiempo y O(1) en memoria auxiliar.
         # TODO: dos punteros, inicio = self.cabeza y fin = self.cola, que
         #       avanzan hacia el centro. Bastan tamano // 2 comparaciones.
-        raise NotImplementedError
+
+        if self.tamano <= 1: return True
+
+        #LO VAMOS A HACER CON N//2 OPERACIONES:
+        #inicializamos los punteros:
+        actual_prim_mitad = self.cabeza
+        actual_seg_mitad = self.cola
+        for _ in range(self.tamano // 2):
+            if actual_prim_mitad == actual_seg_mitad:
+                #actualizamos los punteros:
+                actual_prim_mitad = actual_prim_mitad.siguiente
+                actual_seg_mitad = actual_prim_mitad.anterior
+                continue
+            else:
+                return False
+
+        #si sale del for "con vida" es True:
+        return True
+             
 
     # --- Ampliacion (opcional, no puntua) -------------------------------------
 
