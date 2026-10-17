@@ -32,8 +32,8 @@ class ListaSimple:
     def __iter__(self):
         actual = self.cabeza
         while actual is not None:
-            yield actual.dato
-            actual = actual.siguiente
+            yield actual.dato   #El yield devuelve el valor y convierte a la función en un generador ->   
+            actual = actual.siguiente   # -> es como pausar y reanudar desde donde se había dejado
 
     def __getitem__(self, pos):
         # O(n): hay que seguir pos enlaces desde la cabeza.

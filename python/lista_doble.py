@@ -123,7 +123,7 @@ class ListaDoble:
         nuevo = NodoDoble(dato)
         if self.cola is None:
             nuevo.anterior = self.cola
-            self.cola.siguiente = nuevo
+            self.cola.siguiente = nuevo #?
             self.cola = nuevo
         self.tamano += 1
         #podríamos poner "return", estas funciones suelen devolver algo, pero no es necesario
